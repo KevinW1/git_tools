@@ -7,7 +7,7 @@ Useful graph view:
 git config --global alias.graph "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset%n' --abbrev-commit --date=relative --branches"
 ```
 
-Git tree view
+Git branch tree view
 ```
 git config --global alias.br '!python ~/code/git_tools/git_tools.py branch tree'
 ```
@@ -18,3 +18,10 @@ git config --global alias.br '!python ~/code/git_tools/git_tools.py branch tree'
         │   ├─ fun_branch
         │   └─ test_two
         └─ test_zoo
+
+Git flow
+Recursively rebases from current branch
+
+```
+git config --global alias.flow '!python ~/code/git_tools/git_tools.py branch flow'
+```

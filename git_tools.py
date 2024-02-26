@@ -2,7 +2,7 @@ import argparse
 import logging
 import subprocess
 import sys
-from typing import Optional
+from typing import Optional, Sequence
 
 
 class TermString:
@@ -125,6 +125,24 @@ def commit_count_difference(branch_a: str, branch_b: str) -> Optional[int]:
         return None
 
 
+def checkout(branch: str) -> None:
+    """
+    Checks out the given branch
+    """
+    logging.debug(f"checkout {branch}")
+    cmd = [f"git checkout {branch}"]
+    exe_cmd(cmd)
+
+
+def rebase(upstream: str, child: str) -> None:
+    """
+    Rebased child branch onto upstream branch
+    """
+    logging.debug(f"rebase {TermString(upstream, 'CYAN')} {TermString(child, 'GREEN')}")
+    cmd = [f"git rebase {upstream} {child}"]
+    exe_cmd(cmd)
+
+
 def upstream_tree() -> dict:
     """
     Constructs a simple tree based on each branches upstream branch.
@@ -146,7 +164,7 @@ def upstream_tree() -> dict:
     class TreeNode:
         def __init__(self, name: str):
             self.name = name
-            self.children = []
+            self.children: Sequence(TreeNode) = []
             self.ahead = 0
             self.behind = 0
             self.title = ""
@@ -186,6 +204,29 @@ def upstream_tree() -> dict:
         children.sort(key=lambda x: x.name)
 
     return nodes
+
+
+def flow():
+    """
+    Recursively re-bases from the current active branch down
+
+    Uses the child branch's upstream as the parent to configure the rebase.
+    """
+    logging.debug("Running flow")
+
+    # TODO improve printing, possible traversing width-first through tree.
+    def recursive_rebase(node):
+        for child in node.children:
+            print(child.name, end="  ")
+            rebase(node.name, child.name)
+            if node.children:
+                recursive_rebase(child)
+
+    parent = current_branch()
+    root_node = upstream_tree()[parent]
+    recursive_rebase(root_node)
+    print("")
+    checkout(parent)
 
 
 def branch_tree_string() -> str:
@@ -321,7 +362,7 @@ def main(argv):
         if args.branch_subcommand == "tree":
             print(branch_tree_string())
         elif args.branch_subcommand == "flow":
-            print("TODO")
+            flow()
         else:
             branch_parser.print_help()
     else:
