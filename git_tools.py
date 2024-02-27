@@ -140,7 +140,7 @@ def rebase(upstream: str, child: str) -> None:
     """
     logging.debug(f"rebase {TermString(upstream, 'CYAN')} {TermString(child, 'GREEN')}")
     cmd = [f"git rebase {upstream} {child}"]
-    exe_cmd(cmd)
+    return exe_cmd(cmd)
 
 
 def upstream_tree() -> dict:
@@ -218,7 +218,12 @@ def flow():
     def recursive_rebase(node):
         for child in node.children:
             print(child.name, end="  ")
-            rebase(node.name, child.name)
+            result = rebase(node.name, child.name)
+
+            if "CONFLICT" in result:
+                print(result)
+                exit()
+
             if node.children:
                 recursive_rebase(child)
 
