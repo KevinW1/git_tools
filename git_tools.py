@@ -264,7 +264,7 @@ def branch_tree_string() -> str:
 
         # Pipe printing logic
         pipe = "" if is_first else prefix + ("└─ " if is_last else "├─ ")
-        next_prefix = prefix + "    " if is_last else "│   "
+        next_prefix = prefix + ("    " if is_last else "│   ")
 
         # commit count coloring
         if node.behind is None:
@@ -313,17 +313,17 @@ def branch_tree_string() -> str:
     for row_items in table:
         content_length = 0
         column_width = 0
-        for i in range(len(row_items)):
-            content_length = len(row_items[i])
+        for column in range(len(row_items)):
+            content_length = len(row_items[column])
             # first two columns are conjoined (pipe and branch name)
-            if i == 1:
+            if column == 1:
                 column_width = column_widths[0] + column_widths[1]
-                content_length += len(row_items[i - 1])
+                content_length += len(row_items[column - 1])
             # remaining columns are normal
-            elif i > 1:
-                column_width = column_widths[i]
+            elif column > 1:
+                column_width = column_widths[column]
             padding = min(column_width - content_length, column_width)
-            output += str(row_items[i]) + " " * padding
+            output += str(row_items[column]) + " " * padding
         output += "\n"
 
     return output
